@@ -37,7 +37,7 @@ void loop() {
   // put your main code here, to run repeatedly:
 
   // M(각도)/ 형태로 전송.
-  if (blueToothSerial.available()) {   
+  if (blueToothSerial.available()) {
 
     String str="";
     int start=0;
