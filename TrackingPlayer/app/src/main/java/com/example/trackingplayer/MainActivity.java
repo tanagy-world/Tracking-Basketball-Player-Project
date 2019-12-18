@@ -9,30 +9,10 @@
 package com.example.trackingplayer;
 
 import android.app.Activity;
-import android.content.ContentValues;
 import android.content.Intent;
-import android.content.res.Resources;
-import android.hardware.Camera;
-import android.media.CamcorderProfile;
-import android.media.MediaPlayer;
-import android.media.MediaRecorder;
-import android.net.InetAddresses;
-import android.net.Uri;
 import android.os.Bundle;
-import android.provider.MediaStore;
-import android.util.DisplayMetrics;
-import android.util.Log;
-import android.view.SurfaceHolder;
-import android.view.SurfaceView;
 import android.view.View;
 import android.widget.Button;
-import android.widget.FrameLayout;
-
-import java.io.IOException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-
-import static android.view.View.*;
 
 public class MainActivity  extends Activity {
 
@@ -58,7 +38,7 @@ public class MainActivity  extends Activity {
 
         bluetoothBtn.setOnClickListener(new View.OnClickListener(){
             public void onClick(View v){
-                Intent intent = new Intent(MainActivity.this, BlueToothActivity.class);
+                Intent intent = new Intent(MainActivity.this, BLTMotorControl.class);
                 startActivity(intent);
             }
         });
