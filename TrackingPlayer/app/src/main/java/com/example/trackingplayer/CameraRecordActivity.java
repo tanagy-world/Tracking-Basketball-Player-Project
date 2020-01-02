@@ -17,6 +17,7 @@ import android.media.MediaPlayer;
 import android.media.MediaRecorder;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
 import android.provider.MediaStore;
 import android.util.Log;
 import android.view.SurfaceHolder;
@@ -30,6 +31,7 @@ import androidx.core.app.ActivityCompat;
 import androidx.core.app.ActivityCompat.OnRequestPermissionsResultCallback;
 import androidx.core.content.ContextCompat;
 
+import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
@@ -41,6 +43,7 @@ public class CameraRecordActivity  extends AppCompatActivity implements OnReques
     private SurfaceHolder holder;
     private Button recordBtn;
     String filename;
+    final String path = Environment.getExternalStorageDirectory().getAbsolutePath()+"/TrackingBasketball";
     private final int PERMISSIONS_REQUEST_CODE = 100;
     private final String[] REQUIRED_PERMISSIONS = {Manifest.permission.CAMERA, Manifest.permission.RECORD_AUDIO, Manifest.permission.WRITE_EXTERNAL_STORAGE};
     @Override
@@ -80,7 +83,11 @@ public class CameraRecordActivity  extends AppCompatActivity implements OnReques
     private void startRecorder() {
         recorder = new MediaRecorder();
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyyMMdd_HHmmss");
-        filename = "/sdcard/"+dateFormat.format(new Date(System.currentTimeMillis()));
+        File file = new File(path);
+        if(!file.exists())
+            file.mkdirs();
+
+        filename = path+"/"+dateFormat.format(new Date(System.currentTimeMillis()))+".mp4";
         surface.getCamera().unlock();
         recorder.setCamera(surface.getCamera());
         recorder.setAudioSource(MediaRecorder.AudioSource.MIC);
