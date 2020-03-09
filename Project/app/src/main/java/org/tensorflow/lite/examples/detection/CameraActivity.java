@@ -39,6 +39,9 @@ import com.google.android.material.bottomsheet.BottomSheetBehavior;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.SwitchCompat;
 import androidx.appcompat.widget.Toolbar;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
+
 import android.util.Size;
 import android.view.Surface;
 import android.view.View;
@@ -54,7 +57,7 @@ import org.tensorflow.lite.examples.detection.env.ImageUtils;
 import org.tensorflow.lite.examples.detection.env.Logger;
 
 public abstract class CameraActivity extends AppCompatActivity
-    implements OnImageAvailableListener,
+        implements OnImageAvailableListener,
         Camera.PreviewCallback,
         CompoundButton.OnCheckedChangeListener,
         View.OnClickListener {
@@ -62,7 +65,7 @@ public abstract class CameraActivity extends AppCompatActivity
 
   private static final int PERMISSIONS_REQUEST = 1;
 
-  private static final String PERMISSION_CAMERA = Manifest.permission.CAMERA;
+  private final String[] REQUIRED_PERMISSIONS = {Manifest.permission.CAMERA, Manifest.permission.RECORD_AUDIO, Manifest.permission.WRITE_EXTERNAL_STORAGE};
   protected int previewWidth = 0;
   protected int previewHeight = 0;
   private boolean debug = false;
@@ -343,7 +346,7 @@ public abstract class CameraActivity extends AppCompatActivity
 
   @Override
   public void onRequestPermissionsResult(
-      final int requestCode, final String[] permissions, final int[] grantResults) {
+          final int requestCode, final String[] permissions, final int[] grantResults) {
     if (requestCode == PERMISSIONS_REQUEST) {
       if (allPermissionsGranted(grantResults)) {
         setFragment();
@@ -363,8 +366,12 @@ public abstract class CameraActivity extends AppCompatActivity
   }
 
   private boolean hasPermission() {
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-      return checkSelfPermission(PERMISSION_CAMERA) == PackageManager.PERMISSION_GRANTED;
+    int permission_cnt = 0;
+    for(String cur_permission:REQUIRED_PERMISSIONS)
+      if(ContextCompat.checkSelfPermission(this, cur_permission)==PackageManager.PERMISSION_GRANTED)
+        permission_cnt++;
+    if (permission_cnt<3) {
+      return false;
     } else {
       return true;
     }
@@ -372,14 +379,14 @@ public abstract class CameraActivity extends AppCompatActivity
 
   private void requestPermission() {
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-      if (shouldShowRequestPermissionRationale(PERMISSION_CAMERA)) {
-        Toast.makeText(
-                CameraActivity.this,
-                "Camera permission is required for this demo",
-                Toast.LENGTH_LONG)
-            .show();
-      }
-      requestPermissions(new String[] {PERMISSION_CAMERA}, PERMISSIONS_REQUEST);
+//      if (shouldShowRequestPermissionRationale(PERMISSION_CAMERA)) {
+//        Toast.makeText(
+//                CameraActivity.this,
+//                "Camera permission is required for this demo",
+//                Toast.LENGTH_LONG)
+//            .show();
+//      }
+      ActivityCompat.requestPermissions( this, REQUIRED_PERMISSIONS,PERMISSIONS_REQUEST);
     }
   }
 
