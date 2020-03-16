@@ -121,6 +121,7 @@ public class CameraConnectionFragment extends Fragment {
   private String filename;
   private boolean is_recording;
   CaptureRequest.Builder mCaptureRequestBuilder;
+  BlueToothControl btc;
 
   private final ConnectionCallback cameraConnectionCallback;
   private final CameraCaptureSession.CaptureCallback captureCallback =
@@ -294,12 +295,12 @@ public class CameraConnectionFragment extends Fragment {
     final Activity activity = getActivity();
     if (activity != null) {
       activity.runOnUiThread(
-      new Runnable() {
-        @Override
-        public void run() {
-          Toast.makeText(activity, text, Toast.LENGTH_SHORT).show();
-        }
-      });
+              new Runnable() {
+                @Override
+                public void run() {
+                  Toast.makeText(activity, text, Toast.LENGTH_SHORT).show();
+                }
+              });
     }
   }
 
@@ -336,7 +337,7 @@ public class CameraConnectionFragment extends Fragment {
       @Override
       public void onClick(View view) {
 
-        BlueToothControl btc = new BlueToothControl(getApplicationContext());
+        btc = new BlueToothControl(getApplicationContext());
         bluetoothThread = btc.getBluetoothThread();
       }
     });
@@ -344,7 +345,7 @@ public class CameraConnectionFragment extends Fragment {
     motorBtn.setOnClickListener(new View.OnClickListener(){
       @Override
       public void onClick(View view) {
-        bluetoothThread.write("r");
+        btc.blueToothWrite("r");
       }
     });
 
@@ -524,29 +525,29 @@ public class CameraConnectionFragment extends Fragment {
 
       // Create the reader for the preview frames.
       previewReader =
-          ImageReader.newInstance(
-              previewSize.getWidth(), previewSize.getHeight(), ImageFormat.YUV_420_888, 2);
+              ImageReader.newInstance(
+                      previewSize.getWidth(), previewSize.getHeight(), ImageFormat.YUV_420_888, 2);
 
       previewReader.setOnImageAvailableListener(imageListener, backgroundHandler);
       mCaptureRequestBuilder.addTarget(previewReader.getSurface());
 
       // Here, we create a CameraCaptureSession for camera preview.
       cameraDevice.createCaptureSession(
-          Arrays.asList(surface, previewReader.getSurface()),
-          new CameraCaptureSession.StateCallback() {
+              Arrays.asList(surface, previewReader.getSurface()),
+              new CameraCaptureSession.StateCallback() {
 
-            @Override
-            public void onConfigured(final CameraCaptureSession cameraCaptureSession) {
-              captureSession=cameraCaptureSession;
-              updatePreview();
-            }
+                @Override
+                public void onConfigured(final CameraCaptureSession cameraCaptureSession) {
+                  captureSession=cameraCaptureSession;
+                  updatePreview();
+                }
 
-            @Override
-            public void onConfigureFailed(final CameraCaptureSession cameraCaptureSession) {
-              showToast("Failed");
-            }
-          },
-          null);
+                @Override
+                public void onConfigureFailed(final CameraCaptureSession cameraCaptureSession) {
+                  showToast("Failed");
+                }
+              },
+              null);
     } catch (final CameraAccessException e) {
       LOGGER.e(e, "Exception!");
     }
@@ -581,12 +582,12 @@ public class CameraConnectionFragment extends Fragment {
       captureSession = null;
     }
   }
-private String getFilename()
-{
-  SimpleDateFormat dateFormat = new SimpleDateFormat("yyyyMMdd_HHmmss");
-  return path+"/"+dateFormat.format(new Date(System.currentTimeMillis()))+".mp4";
-}
-private void setUpRecorder() throws IOException{
+  private String getFilename()
+  {
+    SimpleDateFormat dateFormat = new SimpleDateFormat("yyyyMMdd_HHmmss");
+    return path+"/"+dateFormat.format(new Date(System.currentTimeMillis()))+".mp4";
+  }
+  private void setUpRecorder() throws IOException{
     final Activity activity = getActivity();
     if(null == activity) return;
     filename = getFilename();
@@ -646,7 +647,7 @@ private void setUpRecorder() throws IOException{
           }
         }
       }, backgroundHandler);
-    //  timer(); //녹화시간 카운트함수 구현하기
+      //  timer(); //녹화시간 카운트함수 구현하기
     } catch (CameraAccessException | IOException e) {
       e.printStackTrace();
     }
@@ -691,9 +692,9 @@ private void setUpRecorder() throws IOException{
       bufferRect.offset(centerX - bufferRect.centerX(), centerY - bufferRect.centerY());
       matrix.setRectToRect(viewRect, bufferRect, Matrix.ScaleToFit.FILL);
       final float scale =
-          Math.max(
-              (float) viewHeight / previewSize.getHeight(),
-              (float) viewWidth / previewSize.getWidth());
+              Math.max(
+                      (float) viewHeight / previewSize.getHeight(),
+                      (float) viewWidth / previewSize.getWidth());
       matrix.postScale(scale, scale, centerX, centerY);
       matrix.postRotate(90 * (rotation - 2), centerX, centerY);
     } else if (Surface.ROTATION_180 == rotation) {
@@ -716,7 +717,7 @@ private void setUpRecorder() throws IOException{
     public int compare(final Size lhs, final Size rhs) {
       // We cast here to ensure the multiplications won't overflow
       return Long.signum(
-          (long) lhs.getWidth() * lhs.getHeight() - (long) rhs.getWidth() * rhs.getHeight());
+              (long) lhs.getWidth() * lhs.getHeight() - (long) rhs.getWidth() * rhs.getHeight());
     }
   }
 
@@ -736,16 +737,16 @@ private void setUpRecorder() throws IOException{
     public Dialog onCreateDialog(final Bundle savedInstanceState) {
       final Activity activity = getActivity();
       return new AlertDialog.Builder(activity)
-          .setMessage(getArguments().getString(ARG_MESSAGE))
-          .setPositiveButton(
-              android.R.string.ok,
-              new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(final DialogInterface dialogInterface, final int i) {
-                  activity.finish();
-                }
-              })
-          .create();
+              .setMessage(getArguments().getString(ARG_MESSAGE))
+              .setPositiveButton(
+                      android.R.string.ok,
+                      new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(final DialogInterface dialogInterface, final int i) {
+                          activity.finish();
+                        }
+                      })
+              .create();
     }
   }
 }

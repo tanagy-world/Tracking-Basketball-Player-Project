@@ -115,6 +115,9 @@ public class BlueToothControl {
         }
     }
 
+    public void blueToothWrite(String str){
+        mThreadConnectedBluetooth.write((str));
+    }
 
     public class ConnectedBluetoothThread extends Thread {
         private final BluetoothSocket mmSocket;
