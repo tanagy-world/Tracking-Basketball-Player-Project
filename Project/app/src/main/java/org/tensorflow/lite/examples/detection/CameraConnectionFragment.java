@@ -77,6 +77,7 @@ import java.util.List;
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.TimeUnit;
 
+import org.tensorflow.lite.examples.detection.MotorControl.BlueToothControl;
 import org.tensorflow.lite.examples.detection.customview.AutoFitTextureView;
 import org.tensorflow.lite.examples.detection.env.Logger;
 
@@ -85,6 +86,7 @@ import static android.content.ContentValues.TAG;
 @SuppressLint("ValidFragment")
 public class CameraConnectionFragment extends Fragment {
   private static final Logger LOGGER = new Logger();
+  BlueToothControl.ConnectedBluetoothThread bluetoothThread;
 
   /**
    * The camera preview size will be chosen to be the smallest frame by pixel size capable of
@@ -113,6 +115,7 @@ public class CameraConnectionFragment extends Fragment {
   /** The layout identifier to inflate for this Fragment. */
   private final int layout;
   private Button recordBtn;
+  private Button bluetoothBtn;
   private MediaRecorder recorder;
   private final String path = Environment.getExternalStorageDirectory().getAbsolutePath() + "/TrackingBasketball";
   private String filename;
@@ -291,12 +294,12 @@ public class CameraConnectionFragment extends Fragment {
     final Activity activity = getActivity();
     if (activity != null) {
       activity.runOnUiThread(
-              new Runnable() {
-                @Override
-                public void run() {
-                  Toast.makeText(activity, text, Toast.LENGTH_SHORT).show();
-                }
-              });
+      new Runnable() {
+        @Override
+        public void run() {
+          Toast.makeText(activity, text, Toast.LENGTH_SHORT).show();
+        }
+      });
     }
   }
 
@@ -310,6 +313,8 @@ public class CameraConnectionFragment extends Fragment {
   public void onViewCreated(final View view, final Bundle savedInstanceState) {
     textureView = (AutoFitTextureView) view.findViewById(R.id.texture);
     recordBtn = (Button) view.findViewById(R.id.record_btn);
+    bluetoothBtn = (Button)view.findViewById(R.id.bluetooth_btn);
+    Button motorBtn = (Button)view.findViewById(R.id.motorMove_btn);
     recordBtn.setOnClickListener(new View.OnClickListener() {
       public void onClick(View v){
         if(is_recording == false){
@@ -326,6 +331,27 @@ public class CameraConnectionFragment extends Fragment {
         }
       }
     });
+
+    bluetoothBtn.setOnClickListener(new View.OnClickListener(){
+      @Override
+      public void onClick(View view) {
+
+        BlueToothControl btc = new BlueToothControl(getApplicationContext());
+        bluetoothThread = btc.getBluetoothThread();
+      }
+    });
+
+    motorBtn.setOnClickListener(new View.OnClickListener(){
+      @Override
+      public void onClick(View view) {
+        bluetoothThread.write("r");
+      }
+    });
+
+  }
+
+  public Context getApplicationContext(){
+    return this.getContext();
   }
 
   @Override

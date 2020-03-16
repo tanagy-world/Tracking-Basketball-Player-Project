@@ -27,12 +27,44 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
 
-    <Button
-        android:id="@+id/record_btn"
+
+
+    <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:orientation="vertical"
         android:layout_gravity="bottom|center_horizontal"
-        android:layout_margin="40dp"
-        android:text="Record" />
+        >
+
+        <Button
+            android:id="@+id/record_btn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom|center_horizontal"
+            android:layout_margin="10dp"
+            android:text="Record" />
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_gravity="bottom|center_horizontal"
+        >
+        <Button
+            android:id="@+id/bluetooth_btn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom|center_horizontal"
+            android:layout_margin="10dp"
+            android:text="bluetooth" />
+        <Button
+            android:id="@+id/motorMove_btn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom|center_horizontal"
+            android:layout_margin="10dp"
+            android:text="Motor" />
+
+    </LinearLayout>
+    </LinearLayout>
 
 </FrameLayout>
