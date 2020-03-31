@@ -584,6 +584,8 @@ public class CameraConnectionFragment extends Fragment {
   }
   private String getFilename()
   {
+    File file = new File(path);
+    if(!file.exists()) file.mkdir();
     SimpleDateFormat dateFormat = new SimpleDateFormat("yyyyMMdd_HHmmss");
     return path+"/"+dateFormat.format(new Date(System.currentTimeMillis()))+".mp4";
   }
@@ -617,17 +619,25 @@ public class CameraConnectionFragment extends Fragment {
       setUpRecorder();
       SurfaceTexture texture = textureView.getSurfaceTexture();
       assert texture != null;
-      mCaptureRequestBuilder = cameraDevice.createCaptureRequest(CameraDevice.TEMPLATE_RECORD);
+      mCaptureRequestBuilder = cameraDevice.createCaptureRequest(CameraDevice.TEMPLATE_VIDEO_SNAPSHOT);
 
       List<Surface> surfaces = new ArrayList<>();
 
-      Surface previewSurface = new Surface(texture);
-      surfaces.add(previewSurface);
-      mCaptureRequestBuilder.addTarget(previewSurface);
+      Surface surface = new Surface(texture);
+      surfaces.add(surface);
+      mCaptureRequestBuilder.addTarget(surface);
 
       Surface recordSurface = recorder.getSurface();
       surfaces.add(recordSurface);
       mCaptureRequestBuilder.addTarget(recordSurface);
+
+      // Create the reader for the preview frames.
+      previewReader =
+              ImageReader.newInstance(
+                      previewSize.getWidth(), previewSize.getHeight(), ImageFormat.YUV_420_888, 2);
+      previewReader.setOnImageAvailableListener(imageListener, backgroundHandler);
+      surfaces.add(previewReader.getSurface());
+      mCaptureRequestBuilder.addTarget(previewReader.getSurface());
 
       cameraDevice.createCaptureSession(surfaces, new CameraCaptureSession.StateCallback() {
         @Override
@@ -663,7 +673,6 @@ public class CameraConnectionFragment extends Fragment {
       Log.d(TAG, "Video saved :" + filename);
 
       File file = new File(filename);
-      if(!file.exists()) file.mkdir();
       getActivity().getApplicationContext().sendBroadcast(new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE, Uri.fromFile(file)));
     }
     filename = null;
